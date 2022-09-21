@@ -44,9 +44,10 @@ import com.ace.studentmanagement_springdatajpa.model.UserBean;
 		  	}
 		  else if(!userBean.getUserPassword().equals(userBean.getUserCfPassword())) {			  
 			  model.addAttribute("passwordError","Password doesn't match!"); 
-		  return "USR001"; 
-		  } else if(this.isEmailExist(userBean.getUserEmail())) {			  
-			  model.addAttribute("error","Email already exists."); return "USR001"; 
+			  return "USR001"; 
+		  } else if(userService.isEmailExist(userBean.getUserEmail())) {			  
+			  model.addAttribute("error","Email already exists."); 
+			  return "USR001"; 
 		  }else {
 			  
 			  User user = new User(userBean.getUserName(), userBean.getUserEmail(), userBean.getUserCfPassword(), userBean.getUserRole());
@@ -82,7 +83,7 @@ import com.ace.studentmanagement_springdatajpa.model.UserBean;
 					  
 					  model.addAttribute("passwordError","Password doesn't match!"); 
 					  return "USR001-01"; 
-				  }  else if(this.isEmailExist(userBean.getUserEmail())) {			  
+				  }  else if(userService.isEmailExist(userBean.getUserEmail())) {			  
 					  model.addAttribute("error","Email already exists."); 
 					  return "USR001-01"; 
 				  }else {
@@ -116,12 +117,18 @@ import com.ace.studentmanagement_springdatajpa.model.UserBean;
 			  
 			  @PostMapping("/userUpdate") 
 			  public String userUpdate(@ModelAttribute("userBean") @Validated UserBean userBean, BindingResult br, HttpSession session, ModelMap model) {
+			  User usr = userService.getUser(Integer.valueOf(userBean.getUserId()));
+			  String email = usr.getEmail();
 			  if(br.hasErrors() ) {
 				  return "USR002"; 
 			  } else if(!userBean.getUserPassword().equals(userBean.getUserCfPassword())) { 
 				  model.addAttribute("passwordError", "Password doesn't match." ); 
 				  return "USR002"; 
-			  } else { 
+			  } else if(userService.isEmailExist(userBean.getUserEmail()) && !userBean.getUserEmail().equals(email)){
+				  model.addAttribute("error","Email error"); 
+				  return "USR002";
+			  }
+			  else { 
 				  User user = new User(Integer.valueOf(userBean.getUserId()),userBean.getUserName(), userBean.getUserEmail(), userBean.getUserPassword(), userBean.getUserRole()); 
 				  userService.update(user);
 				  return "redirect:/showUser"; } }
@@ -132,15 +139,7 @@ import com.ace.studentmanagement_springdatajpa.model.UserBean;
 				  return "redirect:/showUser"; }
 			  
 			  
-			  public boolean isEmailExist(String email) { 
-					  List<User> list = userService.getAllUser();
-					  if(list != null) { 
-						  for(User user: list ) { 
-							  if(user.getEmail().equals(email)) return true; 
-						  } 
-					  } 					  
-				  return false; 
-				  }			 
+			 		 
 	  
   
   }

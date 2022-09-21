@@ -38,25 +38,27 @@ public class Authentication {
 	  @PostMapping("/Login") 
 	  public String login(ModelMap model, @RequestParam("id") String id, @RequestParam("password") String password, HttpSession session) { 
 		  String current_date = now();
-		  
-		  if(!id.isBlank() && !password.isBlank()) {
-			  User user = userService.selectUserByEmailAndPassword(id, password); 
-			  if(user != null) {
-				  UserBean userBean= new UserBean(
-						  String.valueOf(user.getId()),
-						  user.getName(),
-						  user.getEmail(),
-						  user.getRole()
-						  );
-				  session.setAttribute("user", userBean); 
-				  session.setAttribute("isLogin","Okay");
-				  return "MNU001"; 
-				  } 
+		  if(id.isEmpty() || password.isEmpty()) {
+			  session.setAttribute("date", current_date); 
+			  model.addAttribute("error", "Fill the data! "); 
+			  return "LGN001"; 
+		  }
+		  User user = userService.selectUserByEmailAndPassword(id, password); 
+		  if(user != null) {
+			  UserBean userBean= new UserBean(
+					  String.valueOf(user.getId()),
+					  user.getName(),
+					  user.getEmail(),
+					  user.getRole()
+					  );
+			  session.setAttribute("user", userBean); 
+			  session.setAttribute("isLogin","Okay");
+			  return "MNU001"; 
 			  }
-		  session.setAttribute("date", current_date); 
 		  model.addAttribute("error", "Please check your data again! "); 
 		  return "LGN001"; 
-		  }
+	  }
+		 
 	  
 	  @GetMapping("/Logout") 
 	  public String logout(HttpSession session) {

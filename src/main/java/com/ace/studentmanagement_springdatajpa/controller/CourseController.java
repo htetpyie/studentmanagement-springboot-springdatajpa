@@ -28,7 +28,8 @@ import com.ace.studentmanagement_springdatajpa.model.CourseBean;
 	  public ModelAndView showCourseRegister(HttpSession session) { 
 		  if(session.getAttribute("user") == null) { 
 			  return new ModelAndView("redirect:/"); 
-			  }else 
+			  }
+		  else 
 			  { CourseBean bean = new CourseBean(); 
 			  return new ModelAndView("BUD003","courseBean",bean);
 			  }
@@ -38,7 +39,7 @@ import com.ace.studentmanagement_springdatajpa.model.CourseBean;
 	  public String courseRegister(@ModelAttribute("courseBean") @Validated CourseBean courseBean, BindingResult br, ModelMap model) { 
 		  if(br.hasErrors()) { 
 			  return "BUD003"; }
-		  else if(this.isCourseExist(courseBean.getCourseName())) {
+		  else if(courseService.isCourseExist(courseBean.getCourseName())) {
 			  model.addAttribute("error",courseBean.getCourseName()+" already exists! ");
 			  return "BUD003"; 
 			  }
@@ -51,14 +52,7 @@ import com.ace.studentmanagement_springdatajpa.model.CourseBean;
 	  
 	  }
 	  
-	  public boolean isCourseExist(String courseName) {
-		  List<Course> list = courseService.getAllCourse(); 
-		  if(list!= null) { 
-			  for(Course course: list) {
-				  if(course.getName().equals(courseName)) 
-					  return true; } 
-			  } return false;
-	  }
+	 
 //	  
 //	  public  String idGenerator() { 
 //		  String id = "";

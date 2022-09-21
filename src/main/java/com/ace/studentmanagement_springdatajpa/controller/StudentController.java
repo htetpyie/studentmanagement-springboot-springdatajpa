@@ -1,7 +1,8 @@
 
   package com.ace.studentmanagement_springdatajpa.controller;
   
- import java.util.ArrayList;
+ import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -21,10 +22,13 @@ import
   org.springframework.web.servlet.ModelAndView;
 
 import com.ace.studentmanagement_springdatajpa.dao.CourseService;
+import com.ace.studentmanagement_springdatajpa.dao.ReportService;
 import com.ace.studentmanagement_springdatajpa.dao.StudentService;
 import com.ace.studentmanagement_springdatajpa.entity.Course;
 import com.ace.studentmanagement_springdatajpa.entity.Student;
 import com.ace.studentmanagement_springdatajpa.model.StudentBean;
+
+import net.sf.jasperreports.engine.JRException;
 
   
   @Controller 
@@ -39,12 +43,12 @@ import com.ace.studentmanagement_springdatajpa.model.StudentBean;
 	  public ModelAndView showStudentRegister(HttpSession session) { 
 		  if(session.getAttribute("user") == null) { 
 			  return new ModelAndView("redirect:/"); 
-			  }else 
-			  		{	  
-					  StudentBean studentBean = new StudentBean();
-					  //studentBean.setStudentCourse("Java"); 
-					  return new ModelAndView("STU001","studentBean",studentBean); 
-					  } 
+			  }
+		  else {	  
+				  StudentBean studentBean = new StudentBean();
+				  //studentBean.setStudentCourse("Java"); 
+				  return new ModelAndView("STU001","studentBean",studentBean); 
+				  } 
 	 }
 	  
 	  @PostMapping("/studentRegister") 
@@ -69,12 +73,13 @@ import com.ace.studentmanagement_springdatajpa.model.StudentBean;
 	  public String showStudentAll(ModelMap model, HttpSession session) { 
 		  if(session.getAttribute("user") == null) { 
 			  return "redirect:/"; 
-			  }else 
+			  }
+		  else 
 			  {		  
-		  List<Student> studentList = studentService.getAllStudent(); 
-		  model.addAttribute("studentList", studentList); 
-		  return "STU003"; 
-		  } 
+			  List<Student> studentList = studentService.getAllStudent(); 
+			  model.addAttribute("studentList", studentList); 
+			  return "STU003"; 
+			  } 
 		}
 	  
 	  @GetMapping("/searchStudent") 
@@ -106,7 +111,7 @@ import com.ace.studentmanagement_springdatajpa.model.StudentBean;
 				  student.getPhoto(),
 				  list
 				  );
-		  return new  ModelAndView("STU002","studentBean",studentBean); }
+		  return new  ModelAndView("STU002","studentBean", studentBean); }
 	  
 	  @GetMapping("/deleteStudent") 
 	  public String deleteStudent(@RequestParam("id") String id) {
@@ -152,6 +157,13 @@ import com.ace.studentmanagement_springdatajpa.model.StudentBean;
 			  } 
 		  return courseLists;	  
 	  } 
+
+	  @Autowired
+	  private ReportService report;
+	  @GetMapping("/report")
+	  public String generateReport() throws FileNotFoundException, JRException{
+		return report.exportReport("excel");
+	  }
 	  
 
  }

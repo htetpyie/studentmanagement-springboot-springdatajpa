@@ -22,4 +22,15 @@ public class CourseService {
 	public void save(Course course) {
 		repo.save(course);
 	}
+	
+	public Course findByCoureName(String course) {
+		return repo.findByName(course);
+	}
+	 public boolean isCourseExist(String courseName) {
+		  Course course = this.findByCoureName(courseName);
+		  if(course != null) { 
+			 return true;
+			  }
+		  return false;
+	  }
 }

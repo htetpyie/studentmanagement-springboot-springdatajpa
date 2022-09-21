@@ -39,5 +39,15 @@ public class UserService {
 	public User selectUserByEmailAndPassword(String email, String password) {
 		return userRepo.findUserByEmailAndPassword(email, password);
 	}
+	public User selectUserByEmail(String email) {
+		return userRepo.findByEmail(email);
+	}
 	
+	 public boolean isEmailExist(String email) { 
+		 User user = selectUserByEmail(email);
+		  if(user == null) { 
+			 return false;
+		  } 					  
+	  return true; 
+	  }	
 }
